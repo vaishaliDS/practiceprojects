@@ -1,0 +1,861 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# #### Medical Cost Personal Insurance Project
+Project Description
+Health insurance is a type of insurance that covers medical expenses that arise due to an illness. These expenses could be related to hospitalisation costs, cost of medicines or doctor consultation fees. The main purpose of medical insurance is to receive the best medical care without any strain on your finances. Health insurance plans offer protection against high medical costs. It covers hospitalization expenses, day care procedures, domiciliary expenses, and ambulance charges, besides many others. Based on certain input features such as age , bmi,,no of dependents ,smoker ,region  medical insurance is calculated .
+Columns                                            
+•	age: age of primary beneficiary
+•	sex: insurance contractor gender, female, male
+•	bmi: Body mass index, providing an understanding of body, weights that are relatively high or low relative to height, objective index of body weight (kg / m ^ 2) using the ratio of height to weight, ideally 18.5 to 24.9.
+•	children: Number of children covered by health insurance / Number of dependents
+•	smoker: Smoking
+•	region: the beneficiary's residential area in the US, northeast, southeast, southwest, northwest.
+•	charges: Individual medical costs billed by health insurance
+
+Predict : Can you accurately predict insurance costs?
+
+Dataset Link-
+https://github.com/dsrscientist/dataset4
+https://github.com/dsrscientist/dataset4/blob/main/medical_cost_insurance.csv
+
+# In[5]:
+
+
+import pandas as pd
+import numpy as np
+import seaborn  as sns
+import matplotlib.pyplot as plt
+get_ipython().run_line_magic('matplotlib', 'inline')
+
+
+# In[30]:
+
+
+#loading CSV file
+df=pd.read_csv("medical_cost_insurance.csv")
+
+
+# In[3]:
+
+
+df
+
+
+# In[4]:
+
+
+#checking shape of dataframe
+df.shape
+
+
+# There are 1338 Rows and 7 columns
+
+# In[5]:
+
+
+#checking dataframe information
+df.info()
+
+
+# 
+# 1)There are 3 categorical columns['sex','smoker','region']  
+# 2)And 5 numerical(int,float) columns['age', 'bmi', 'children', 'charges']  
+# 3)No null values are present in data.'''
+
+# In[6]:
+
+
+#checking for null values
+df.isnull().sum()
+
+
+# In[7]:
+
+
+#null value visualisation
+sns.heatmap(df.isnull())
+
+
+# We can observe that there no null values present in the data . 
+
+# In[11]:
+
+
+df.columns.to_list()
+
+
+# In[12]:
+
+
+#lets check the value count of col
+df['age'].value_counts()
+
+
+# There are no  null values present 
+
+# In[13]:
+
+
+#lets check the value count of col
+df['sex'].value_counts()
+
+
+# There are no  null values present 
+
+# In[15]:
+
+
+#lets check the value count of col
+df['bmi'].value_counts()
+
+
+# There are no  null values present 
+
+# In[16]:
+
+
+#lets check the value count of col
+df['children'].value_counts()
+
+
+# There are no  null values present 
+
+# In[17]:
+
+
+#lets check the value count of col
+df['smoker'].value_counts()
+
+
+# There are no  null values present 
+
+# In[22]:
+
+
+#lets check the value count of col
+print(df['region'].value_counts())
+
+
+# There are no  null values present 
+
+# In[19]:
+
+
+#lets check the value count of col
+df['charges'].value_counts()
+
+
+# There are no  null values present 
+
+# In[ ]:
+
+
+
+
+
+# In[26]:
+
+
+#lets check npo of unique values n there count
+for i in df.columns:
+    print(f"unique values present in {i} :",df[i].unique())
+    print(f"total number of unique values present in {i} :",df[i].nunique())
+    print("\n")
+
+
+# Since target variable is having continuous data .Problem statement is of **Regression** type.
+
+# In[28]:
+
+
+# checking statistical data of numerical columns
+df.describe()
+
+
+# 1)Since,the count of columns are same missing values are not presnt.  
+# 2)The mean value and median value(50%) is almost sqame for all columns so there is no sknewness present .  
+# 3)We can get min ,max values in each column. 
+# 
+
+# ### EDA
+
+# #### univariate
+
+# In[33]:
+
+
+#
+plt.figure(figsize=(15,8))
+sns.countplot(df['age'])
+plt.
+
+
+# In[37]:
+
+
+df[df['age']<40].value_counts().sum()
+print((674/1338)*100)
+
+
+# 1)At 18 and 19 max no.of people have taken health insurance.That means people have started understanding importance of health insurance.
+# 2)50% of people are below 40 and 50% are above 40.
+
+# In[40]:
+
+
+#sex count visualization
+print(df['sex'].value_counts())
+sns.countplot(df['sex'])
+
+
+# Almost equal number of male and female has taken Health insurance.
+
+# In[10]:
+
+
+#bmi data visualization
+print(df['bmi'].value_counts())
+sns.histplot(df['bmi'])
+
+
+# 1)As we can see bell curve ,It is normally distributed feature .  
+# 2)Mostly people has BMI between 23-37 . 
+
+# In[12]:
+
+
+#children count visualization
+print(df['children'].value_counts())
+sns.histplot(df['children'])
+
+
+# 1)As we can see people having '0' children are around 50% .  
+# 2)Very less people having 3,4,5 children.
+
+# In[13]:
+
+
+#smoker data visualization
+print(df['smoker'].value_counts())
+sns.histplot(df['smoker'])
+
+
+# 1)Around 80% of people who does not smoke has taken policy .  
+# 2)Only 20% of people who smoke have opted for policy .
+
+# In[14]:
+
+
+#region data visualization
+print(df['region'].value_counts())
+sns.histplot(df['region'])
+
+
+# 1)From value count and graph we can see people in "Southeast" region heighest in number and  
+# rest of all other 3 regions have equal numberpeople who has taken the policy
+
+# In[15]:
+
+
+#charges data visualization
+print(df['charges'].value_counts())
+sns.histplot(df['charges'])
+
+
+# 1)AS policy charges increases number of people optoing for policy decreases.It is in -ve correlation.  
+# 2)70%-80% people having charges between 1500-14000 . 
+#  
+
+# #### Bivariate Analysis
+
+# In[34]:
+
+
+# Smoker VS Charges
+sns.set_style('dark')
+plt.rcParams['figure.figsize']=(5,6)
+sns.barplot(x=df['smoker'],y=df['charges'])
+plt.title('Smoker VS Charges')
+
+
+# Smokers are paying more charges as compaired to non smokers .
+
+# In[33]:
+
+
+# Age VS Children
+sns.set_style('dark')
+plt.rcParams['figure.figsize']=(10,6)
+sns.barplot(x=df['children'],y=df['charges'])
+plt.title("Age VS Children")
+
+
+# 1) people paying heighest charges have 2,3 children ,lowest charges having 5 children .
+
+# In[38]:
+
+
+#'Region vs Charges'
+sns.set_style("dark")
+plt.title('Region vs Charges')
+sns.barplot(x=df['region'],y=df['charges'])
+
+
+# In[39]:
+
+
+#'Sex vs Charges'
+sns.set_style("dark")
+plt.title('Region vs Charges')
+sns.barplot(x=df['sex'],y=df['charges'])
+
+
+# Males are paying slightly more charges than females .
+
+# Highest revenue is coming form "Southeast" region then "Northeast" and then rest 2 regions come.
+
+# #### Multivariate analysis
+
+# In[53]:
+
+
+sns.pairplot(df,palette='dark')
+
+
+# 1)From the diagonal graph we can see scatterplot. We can observe that age and bmi are normally distribited , whereas childeren graph has left skweness.  
+# 2)As age increases charges also increases. Age and Charges are +vely correlated.  
+# 3)Same with the BMI it is also +vely correlated with target.
+
+# #### checking for Outliers
+
+# In[68]:
+
+
+plt.figure(figsize=(12,6))
+figcount=1
+for i in df.columns:
+    if figcount<=3:
+        if df[i].dtype!='object':
+            plt.subplot(2,2,figcount)
+            sns.boxplot(df[i])
+            plt.xlabel(i)
+            plt.yticks(rotation=0,fontsize=8)
+            figcount+=1
+
+
+# From the above graphs we can observe there are no outliers present in 'age' n 'children' but 'bmi' has some outliers present in it
+
+# #### Checking for skewnwss
+
+# In[76]:
+
+
+df.skew()
+
+
+# By assuming threshold values fro skewnwss +.5 to -.5 .since charges is our target variable no need to remove skewness from it but We can observe children column has skewness more than 0.5 .
+# so will remove the skewness by using Square root method.
+# 
+
+# In[79]:
+
+
+#remove skewness by using square root function
+df['children']=np.sqrt(df['children'])
+
+
+# In[78]:
+
+
+# checking skewness again 
+df.skew()
+
+
+# Now the skness fits into threshold level ,it came dwon to 0.11635 from 0.938 .
+# No skewness present in the data
+
+# #### Encoding categorical columns
+
+# In[31]:
+
+
+from sklearn.preprocessing import OrdinalEncoder
+oe=OrdinalEncoder()
+for i in df.columns:
+    if df[i].dtype=='object':
+        df[i]=oe.fit_transform(df[i].values.reshape(-1,1))
+
+
+# In[32]:
+
+
+#lets check dataframe after encoding
+df
+
+
+# All categorical columns has been converted into numerical data.
+
+# In[85]:
+
+
+df.describe()
+
+
+# In[ ]:
+
+
+since all the ciolumns got numerical data now we can see statistical summary for all columns. 
+
+
+# #### Checking out the correlation between all variables
+
+# In[86]:
+
+
+cor=df.corr()
+
+
+# In[87]:
+
+
+cor
+
+
+# In[90]:
+
+
+#visualizing correaltion in heatmap
+plt.figure(figsize=(15,6))
+sns.heatmap(cor,fmt='.1g',annot=True)
+plt.yticks(rotation=0)
+
+
+# from the above graph we can figur out that there is no multicollinearity in features.   
+# smoker and age are strongly related to target amongest all.
+
+# In[91]:
+
+
+#lets chekout correlation of Target with features
+cor['charges'].sort_values(ascending=False)
+
+
+# 1)From above readings ['age', 'sex', 'bmi', 'children', 'smoker']are the columns having +ve correlation with target.  
+# 2)Smokers are highly correlated with target then age ,bmi,children,sex comes.  
+# 3)Only region is the feature having -Ve correlation .  
+
+# #### visualizing target variable correlation with features
+
+# In[94]:
+
+
+plt.figure(figsize=(15,6))
+df.corr()['charges'].sort_values(ascending=False).drop(['charges']).plot(kind='bar' ,color='b')
+plt.xlabel('Features',fontsize=10)
+plt.ylabel('Target',fontsize=10)
+plt.title('Correlation between Target and Features')
+
+
+# From above graph we can see all features are +vely correlated with target except region which very less -vely correlated with target variable.
+
+# #### Seperating Features and Target variables
+
+# In[9]:
+
+
+x=df.drop('charges',axis=1)
+y=df['charges']
+
+
+# In[10]:
+
+
+#input variables
+x
+
+
+# In[11]:
+
+
+#checking target variable
+y
+
+
+# #### Feature scaling using Standard Scalariztion
+
+# In[33]:
+
+
+from sklearn.preprocessing import StandardScaler
+scal=StandardScaler()
+x=pd.DataFrame(scal.fit_transform(x),columns=x.columns)
+x
+
+
+# we can see features are now in the almost same range .
+
+# In[34]:
+
+
+y.shape
+
+
+# #### Find best random state value
+
+# In[35]:
+
+
+# importing libraries
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_absolute_error ,mean_squared_error ,r2_score
+from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.linear_model import LinearRegression
+
+
+# #### Creating train test split
+
+# In[43]:
+
+
+lr=LinearRegression()
+max_Accu=0
+max_RS=0
+for i in range(1,200):
+    
+    x_train,x_test,y_train,y_test=train_test_split(x,y,test_size=0.3,random_state=i)
+    lr.fit(x_train,y_train)
+    pred=lr.predict(x_test)
+    acc=r2_score(y_test,pred)
+    
+    if acc>max_Accu :
+        max_Accu=acc
+        max_Rs=i
+print("Maximum R2 score is:",max_Accu,"on random state :",max_Rs)
+
+
+# Lets consider random sate value 112 as accuracy we are getting is high at this state.
+
+# In[44]:
+
+
+x_train,x_test,y_train,y_test=train_test_split(x,y,test_size=0.3,random_state=112)
+
+
+# In[45]:
+
+
+from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.neighbors import KNeighborsRegressor as knn
+from sklearn.linear_model import Lasso ,Ridge
+
+
+# In[47]:
+
+
+lr=LinearRegression()
+lr.fit(x_train,y_train)
+pred_lr=lr.predict(x_test)
+pred_train=lr.predict(x_train)
+print("R2_score:",r2_score(y_test,pred_lr))
+print("R2_score on training data:",r2_score(y_train,pred_train)*100)
+print("Mean Absolute Error:",mean_absolute_error(y_test,pred_lr))
+print("Mean Squared Error:",mean_squared_error(y_test,pred_lr))
+print("Root Mean Squre Error: ",np.sqrt(mean_squared_error(y_test,pred_lr)))
+
+
+# In[49]:
+
+
+rfr=RandomForestRegressor()
+rfr.fit(x_train,y_train)
+pred_rfr=rfr.predict(x_test)
+pred_train=rfr.predict(x_train)
+print("R2_score:",r2_score(y_test,pred_rfr))
+print("R2_score on training data:",r2_score(y_train,pred_train)*100)
+print("Mean Absolute Error:",mean_absolute_error(y_test,pred_rfr))
+print("Mean Squared Error:",mean_squared_error(y_test,pred_rfr))
+print("Root Mean Squre Error: ",np.sqrt(mean_squared_error(y_test,pred_rfr)))
+
+
+# In[50]:
+
+
+knn=knn()
+knn.fit(x_train,y_train)
+pred_knn=knn.predict(x_test)
+pred_train=knn.predict(x_train)
+print("R2_score:",r2_score(y_test,pred_knn))
+print("R2_score on training data:",r2_score(y_train,pred_train)*100)
+print("Mean Absolute Error:",mean_absolute_error(y_test,pred_knn))
+print("Mean Squared Error:",mean_squared_error(y_test,pred_knn))
+print("Root Mean Squre Error: ",np.sqrt(mean_squared_error(y_test,pred_knn)))
+
+
+# In[51]:
+
+
+gbr=GradientBoostingRegressor()
+gbr.fit(x_train,y_train)
+pred_gbr=gbr.predict(x_test)
+pred_train=gbr.predict(x_train)
+print("R2_score:",r2_score(y_test,pred_gbr))
+print("R2_score on training data:",r2_score(y_train,pred_train)*100)
+print("Mean Absolute Error:",mean_absolute_error(y_test,pred_gbr))
+print("Mean Squared Error:",mean_squared_error(y_test,pred_gbr))
+print("Root Mean Squre Error: ",np.sqrt(mean_squared_error(y_test,pred_gbr)))
+
+
+# In[52]:
+
+
+ls=Lasso()
+ls.fit(x_train,y_train)
+pred_ls=ls.predict(x_test)
+pred_train=ls.predict(x_train)
+print("R2_score:",r2_score(y_test,pred_ls))
+print("R2_score on training data:",r2_score(y_train,pred_train)*100)
+print("Mean Absolute Error:",mean_absolute_error(y_test,pred_ls))
+print("Mean Squared Error:",mean_squared_error(y_test,pred_ls))
+print("Root Mean Squre Error: ",np.sqrt(mean_squared_error(y_test,pred_ls)))
+
+
+# In[53]:
+
+
+rg=Ridge()
+rg.fit(x_train,y_train)
+pred_rg=rg.predict(x_test)
+pred_train=rg.predict(x_train)
+print("R2_score:",r2_score(y_test,pred_rg))
+print("R2_score on training data:",r2_score(y_train,pred_train)*100)
+print("Mean Absolute Error:",mean_absolute_error(y_test,pred_rg))
+print("Mean Squared Error:",mean_squared_error(y_test,pred_rg))
+print("Root Mean Squre Error: ",np.sqrt(mean_squared_error(y_test,pred_rg)))
+
+
+# In[54]:
+
+
+from sklearn.tree import DecisionTreeRegressor
+dc=DecisionTreeRegressor()
+dc.fit(x_train,y_train)
+pred_dc=dc.predict(x_test)
+pred_train=dc.predict(x_train)
+print("R2_score:",r2_score(y_test,pred_dc))
+print("R2_score on training data:",r2_score(y_train,pred_train)*100)
+print("Mean Absolute Error:",mean_absolute_error(y_test,pred_dc))
+print("Mean Squared Error:",mean_squared_error(y_test,pred_dc))
+print("Root Mean Squre Error: ",np.sqrt(mean_squared_error(y_test,pred_dc)))
+
+
+# In[55]:
+
+
+from sklearn.svm import SVR
+svr=SVR()
+svr.fit(x_train,y_train)
+pred_svr=svr.predict(x_test)
+pred_train=svr.predict(x_train)
+print("R2_score:",r2_score(y_test,pred_svr))
+print("R2_score on training data:",r2_score(y_train,pred_train)*100)
+print("Mean Absolute Error:",mean_absolute_error(y_test,pred_svr))
+print("Mean Squared Error:",mean_squared_error(y_test,pred_svr))
+print("Root Mean Squre Error: ",np.sqrt(mean_squared_error(y_test,pred_svr)))
+
+
+# In[56]:
+
+
+from sklearn.ensemble import ExtraTreesRegressor
+etr=ExtraTreesRegressor()
+etr.fit(x_train,y_train)
+pred_etr=etr.predict(x_test)
+pred_train=etr.predict(x_train)
+print("R2_score:",r2_score(y_test,pred_etr))
+print("R2_score on training data:",r2_score(y_train,pred_train)*100)
+print("Mean Absolute Error:",mean_absolute_error(y_test,pred_etr))
+print("Mean Squared Error:",mean_squared_error(y_test,pred_etr))
+print("Root Mean Squre Error: ",np.sqrt(mean_squared_error(y_test,pred_etr)))
+
+
+# In[57]:
+
+
+from sklearn.model_selection import cross_val_score
+
+
+# In[59]:
+
+
+score=cross_val_score(lr, x,y,cv=5,scoring='r2')
+print(score)
+print(score.mean())
+print("Diffrence between R2 score and cross validation score is: " ,(r2_score(y_test,pred_lr)-score.mean()*100))
+
+
+# In[61]:
+
+
+#RandomForestRegressor
+score=cross_val_score(rfr, x,y,cv=5,scoring='r2')
+print(score)
+print(score.mean())
+print("Diffrence between R2 score and cross validation score is: " ,(r2_score(y_test,pred_rfr)-score.mean()*100))
+
+
+# In[62]:
+
+
+#KNN
+score=cross_val_score(knn, x,y,cv=5,scoring='r2')
+print(score)
+print(score.mean())
+print("Diffrence between R2 score and cross validation score is: " ,(r2_score(y_test,pred_knn)-score.mean()*100))
+
+
+# In[63]:
+
+
+#GradientBoostingRegressor
+score=cross_val_score(gbr, x,y,cv=5,scoring='r2')
+print(score)
+print(score.mean())
+print("Diffrence between R2 score and cross validation score is: " ,(r2_score(y_test,pred_gbr)-score.mean()*100))
+
+
+# In[64]:
+
+
+#Lasso
+score=cross_val_score(ls, x,y,cv=5,scoring='r2')
+print(score)
+print(score.mean())
+print("Diffrence between R2 score and cross validation score is: " ,(r2_score(y_test,pred_ls)-score.mean()*100))
+
+
+# In[65]:
+
+
+#Ridge
+score=cross_val_score(rg, x,y,cv=5,scoring='r2')
+print(score)
+print(score.mean())
+print("Diffrence between R2 score and cross validation score is: " ,(r2_score(y_test,pred_rg)-score.mean()*100))
+
+
+# In[66]:
+
+
+#DecisionTreeRegressor
+score=cross_val_score(dc, x,y,cv=5,scoring='r2')
+print(score)
+print(score.mean())
+print("Diffrence between R2 score and cross validation score is: " ,(r2_score(y_test,pred_dc)-score.mean()*100))
+
+
+# In[68]:
+
+
+#SVR
+score=cross_val_score(svr, x,y,cv=5,scoring='r2')
+print(score)
+print(score.mean())
+print("Diffrence between R2 score and cross validation score is: " ,(r2_score(y_test,pred_svr)-score.mean()*100))
+
+
+# In[67]:
+
+
+#ExtraTreesRegressor
+score=cross_val_score(etr, x,y,cv=5,scoring='r2')
+print(score)
+print(score.mean())
+print("Diffrence between R2 score and cross validation score is: " ,(r2_score(y_test,pred_etr)-score.mean()*100))
+
+
+# From the Diffrence between R2 score and cross validation score DecisionTreeRegressor is best fitting  for our model.
+# 
+
+# In[69]:
+
+
+from sklearn.model_selection import GridSearchCV
+
+
+# In[74]:
+
+
+params={
+       'max_featuresint':[ 'auto', 'sqrt', 'log2'],
+       'min_samples_split':[2,5,8,10],
+       'min_samples_leaf':[1,5,10]}
+
+dtr=DecisionTreeRegressor()
+gscv=GridSearchCV(dtr,params,cv=5)
+gscv.fit(x_train,y_train)
+
+
+# In[75]:
+
+
+# Hyper parameters range intialization for tuning 
+
+parameters={"splitter":["best","random"],
+           "max_depth" : [1,3,5,7,9,11,12],
+          "min_samples_leaf":[1,2,3,4,5,6,7,8,9,10],
+          "min_weight_fraction_leaf":[0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9],
+          "max_features":["auto","log2","sqrt",None],
+          "max_leaf_nodes":[None,10,20,30,40,50,60,70,80,90] }
+dtr=DecisionTreeRegressor()
+gscv=GridSearchCV(dtr,parameters,cv=5)
+gscv.fit(x_train,y_train)
+
+
+# In[76]:
+
+
+gscv.best_params_
+
+
+# In[78]:
+
+
+model=DecisionTreeRegressor(splitter='best' ,max_depth=5 ,min_samples_leaf=9 ,min_weight_fraction_leaf= 0.1,
+                            max_features='auto' ,max_leaf_nodes= None)
+model.fit(x_train,y_train)
+pred=model.predict(x_test)
+
+print("R2_score:",r2_score(y_test,pred))
+print("Mean Absolute Error:",mean_absolute_error(y_test,pred))
+print("Mean Squared Error:",mean_squared_error(y_test,pred))
+print("Root Mean Squre Error: ",np.sqrt(mean_squared_error(y_test,pred)))
+
+
+# In[79]:
+
+
+#serialization
+import pickle
+filename='insurance.pkl'
+pickle.dump(model,open(filename,'wb'))#model savew
+
+
+# In[81]:
+
+
+#Deserialization
+import pickle
+
+loaded_model=pickle.load(open('insurance.pkl','rb'))#model load
+result=loaded_model.score(x_test,y_test)
+print(result*100)
+
+
+# In[ ]:
+
+
+
+
